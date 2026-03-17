@@ -191,6 +191,42 @@ button{font-family:var(--font-body)}
   font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;
 }
 
+/* Photo Editor */
+.photo-editor{margin-top:12px}
+.pe-viewport{
+  width:100%;max-width:340px;margin:0 auto;
+  aspect-ratio:4/5;border-radius:var(--radius);
+  overflow:hidden;background:var(--hd-sand);
+  position:relative;cursor:grab;touch-action:none;
+  border:2px solid var(--hd-border);
+}
+.pe-viewport:active{cursor:grabbing}
+.pe-viewport img{
+  position:absolute;top:0;left:0;
+  width:100%;height:auto;min-height:100%;
+  object-fit:cover;pointer-events:none;
+  transform-origin:0 0;user-select:none;
+  -webkit-user-drag:none;
+}
+.pe-controls{
+  display:flex;align-items:center;gap:8px;
+  justify-content:center;margin-top:10px;
+}
+.pe-btn{width:36px;height:36px;font-size:1.2rem;padding:0;font-weight:700}
+.pe-slider{
+  flex:1;max-width:180px;height:6px;
+  -webkit-appearance:none;appearance:none;
+  background:var(--hd-border);border-radius:3px;outline:none;
+}
+.pe-slider::-webkit-slider-thumb{
+  -webkit-appearance:none;width:20px;height:20px;
+  border-radius:50%;background:var(--hd-terracotta);cursor:pointer;
+}
+.pe-hint{
+  text-align:center;font-size:0.68rem;color:var(--hd-text-light);
+  margin-top:6px;
+}
+
 /* ═══════════ BUTTONS ═══════════ */
 .btn{
   display:inline-flex;align-items:center;justify-content:center;
@@ -261,8 +297,9 @@ button{font-family:var(--font-body)}
   width:100%;max-width:300px;margin:0 auto 12px;
   border-radius:var(--radius);overflow:hidden;
   aspect-ratio:4/5;background:var(--hd-sand);
+  position:relative;
 }
-.story-img{width:100%;height:100%;object-fit:cover;display:block}
+.story-img{width:100%;height:100%;object-fit:cover;display:block;position:absolute;top:0;left:0}
 .story-text-block{
   background:var(--hd-beige);border-radius:var(--radius-sm);
   padding:14px;margin-bottom:8px;
@@ -456,7 +493,7 @@ button{font-family:var(--font-body)}
   </div>
   <div id="evFields">
     <div class="fg"><label for="evType">Event Type</label>
-      <select id="evType"><option value="puppy-yoga">Puppy Yoga</option><option value="vendor-market">Vendor Market / Pop-Up</option><option value="adoption">Adoption Event</option><option value="private-party">Private Party / Corporate</option><option value="coworking-promo">Coworking Promo</option><option value="run-club">Run Club</option><option value="record-club">Record / Vinyl Night</option><option value="singles-night">Singles Night</option><option value="concert">Concert / Live Music</option><option value="general">Other / Custom</option></select>
+      <select id="evType"><option value="general">Other / Custom</option><option value="adoption">Adoption Event</option><option value="concert">Concert / Live Music</option><option value="coworking-promo">Coworking Promo</option><option value="private-party">Private Party / Corporate</option><option value="puppy-yoga">Puppy Yoga</option><option value="record-club">Record / Vinyl Night</option><option value="run-club">Run Club</option><option value="singles-night">Singles Night</option><option value="vendor-market">Vendor Market / Pop-Up</option></select>
     </div>
     <div class="fg"><label for="evName">Event Name</label><input type="text" id="evName" placeholder="e.g., Paws & Flow Puppy Yoga"></div>
     <div class="fg"><label for="evDate">Event Date</label><input type="date" id="evDate"></div>
@@ -488,6 +525,17 @@ button{font-family:var(--font-body)}
     <div class="photo-area" id="phArea"><div class="ico">📷</div><div class="txt">Tap to upload or drag photo</div><div class="sub">JPG, PNG, HEIC, WEBP — up to 10</div></div>
     <input type="file" id="phIn" accept="image/*" multiple hidden>
     <div class="thumbs" id="phThumbs"></div>
+    <div id="photoEditor" class="photo-editor hide">
+      <div class="pe-viewport" id="peViewport">
+        <img id="peImg" src="" alt="" draggable="false">
+      </div>
+      <div class="pe-controls">
+        <button class="btn btn-s pe-btn" id="peZoomOut">−</button>
+        <input type="range" id="peZoom" min="100" max="300" value="100" class="pe-slider">
+        <button class="btn btn-s pe-btn" id="peZoomIn">+</button>
+      </div>
+      <div class="pe-hint">Pinch to zoom · Drag to reposition</div>
+    </div>
   </div>
 
   <div class="fg"><label for="rawNotes">Tell Paws what's up</label>
@@ -684,13 +732,72 @@ function addPhotos(files){
     if(photos.length>=10)break;
     const reader=new FileReader();
     reader.onload=e=>{
-      const ph={url:e.target.result,name:f.name};photos.push(ph);
+      const ph={url:e.target.result,name:f.name,scale:1,x:0,y:0};photos.push(ph);
       const d=document.createElement("div");d.className="thumb";
       d.innerHTML=`<img src="${ph.url}" alt=""><button class="thumb-x">&times;</button>`;
-      d.querySelector(".thumb-x").addEventListener("click",()=>{photos=photos.filter(x=>x.url!==ph.url);d.remove()});
+      d.querySelector(".thumb-x").addEventListener("click",()=>{photos=photos.filter(x=>x.url!==ph.url);d.remove();if(!photos.length)document.getElementById("photoEditor").classList.add("hide")});
+      d.addEventListener("click",()=>openPhotoEditor(ph));
       c.appendChild(d);
+      // Auto-open editor for first photo
+      if(photos.length===1)openPhotoEditor(ph);
     };reader.readAsDataURL(f);
   }
+}
+
+// Photo Editor — zoom/pan
+let editingPhoto=null,peState={scale:1,x:0,y:0,dragging:false,lastX:0,lastY:0,pinchDist:0};
+function openPhotoEditor(ph){
+  editingPhoto=ph;
+  const editor=document.getElementById("photoEditor");
+  const img=document.getElementById("peImg");
+  const slider=document.getElementById("peZoom");
+  editor.classList.remove("hide");
+  img.src=ph.url;
+  peState.scale=ph.scale||1;peState.x=ph.x||0;peState.y=ph.y||0;
+  slider.value=peState.scale*100;
+  updatePeTransform();
+
+  const vp=document.getElementById("peViewport");
+
+  // Mouse drag
+  vp.onmousedown=e=>{e.preventDefault();peState.dragging=true;peState.lastX=e.clientX;peState.lastY=e.clientY};
+  document.onmousemove=e=>{if(!peState.dragging)return;peState.x+=e.clientX-peState.lastX;peState.y+=e.clientY-peState.lastY;peState.lastX=e.clientX;peState.lastY=e.clientY;updatePeTransform()};
+  document.onmouseup=()=>{peState.dragging=false;savePeState()};
+
+  // Touch drag + pinch
+  vp.ontouchstart=e=>{
+    if(e.touches.length===1){peState.dragging=true;peState.lastX=e.touches[0].clientX;peState.lastY=e.touches[0].clientY}
+    if(e.touches.length===2){peState.pinchDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY)}
+  };
+  vp.ontouchmove=e=>{
+    e.preventDefault();
+    if(e.touches.length===1&&peState.dragging){
+      peState.x+=e.touches[0].clientX-peState.lastX;peState.y+=e.touches[0].clientY-peState.lastY;
+      peState.lastX=e.touches[0].clientX;peState.lastY=e.touches[0].clientY;updatePeTransform();
+    }
+    if(e.touches.length===2){
+      const dist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+      const delta=dist/peState.pinchDist;
+      peState.scale=Math.min(3,Math.max(1,peState.scale*delta));
+      peState.pinchDist=dist;slider.value=peState.scale*100;updatePeTransform();
+    }
+  };
+  vp.ontouchend=()=>{peState.dragging=false;savePeState()};
+
+  // Zoom slider
+  slider.oninput=()=>{peState.scale=slider.value/100;updatePeTransform()};
+  slider.onchange=()=>savePeState();
+
+  // Zoom buttons
+  document.getElementById("peZoomIn").onclick=()=>{peState.scale=Math.min(3,peState.scale+0.1);slider.value=peState.scale*100;updatePeTransform();savePeState()};
+  document.getElementById("peZoomOut").onclick=()=>{peState.scale=Math.max(1,peState.scale-0.1);slider.value=peState.scale*100;updatePeTransform();savePeState()};
+}
+function updatePeTransform(){
+  const img=document.getElementById("peImg");
+  img.style.transform=`translate(${peState.x}px,${peState.y}px) scale(${peState.scale})`;
+}
+function savePeState(){
+  if(editingPhoto){editingPhoto.scale=peState.scale;editingPhoto.x=peState.x;editingPhoto.y=peState.y}
 }
 
 // ── VOICE ──
@@ -733,7 +840,8 @@ function renderOut(out){
     const card=document.createElement("div");card.className="ocard";
     let body="",tags="",meta="";
     if(pl==="story"){
-      body=`${photos.length?`<div class="story-img-wrap"><img src="${photos[0].url}" alt="" class="story-img"></div>`:""}
+      const ph=photos[0];
+      body=`${ph?`<div class="story-img-wrap"><img src="${ph.url}" alt="" class="story-img" style="transform:translate(${ph.x||0}px,${ph.y||0}px) scale(${ph.scale||1});transform-origin:0 0"></div>`:""}
         <div class="story-text-block">
           <div class="story-l1">${cn.l1}</div>
           ${cn.body?`<div class="story-body">${cn.body}</div>`:""}
@@ -822,7 +930,7 @@ function renderOut(out){
 }
 
 function clearForm(){
-  curOut=null;curFD=null;photos=[];
+  curOut=null;curFD=null;photos=[];editingPhoto=null;
   document.getElementById("outSec").classList.add("hide");
   document.getElementById("outCards").innerHTML="";
   document.getElementById("outActs").innerHTML="";
@@ -838,6 +946,7 @@ function clearForm(){
   document.getElementById("isPaid").checked=false;
   document.getElementById("adF").classList.add("hide");
   document.getElementById("phThumbs").innerHTML="";
+  document.getElementById("photoEditor").classList.add("hide");
   window.scrollTo({top:0,behavior:"smooth"});
 }
 
