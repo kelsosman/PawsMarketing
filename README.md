@@ -1,149 +1,974 @@
-# Paws 🐾 — HomeDog Content Assistant
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Paws — HomeDog Content Assistant</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐾</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════ DESIGN SYSTEM ═══════════ */
+:root {
+  --hd-charcoal: #2C2926;
+  --hd-warm-black: #3A3632;
+  --hd-cream: #FBF6EE;
+  --hd-sand: #F0E6D6;
+  --hd-beige: #F7F1E7;
+  --hd-terracotta: #C4703F;
+  --hd-terracotta-light: #D98B55;
+  --hd-sage: #6B8F71;
+  --hd-sage-dark: #537A58;
+  --hd-gold: #D4A843;
+  --hd-white: #FFFFFF;
+  --hd-text: #2C2926;
+  --hd-text-mid: #6B6360;
+  --hd-text-light: #9A918A;
+  --hd-border: #E5DDD2;
+  --hd-card: #FFFFFF;
+  --hd-error: #C0392B;
+  --hd-star: #D4A843;
+  --hd-fun: #E8996A;
 
-Meet **Paws** — your mobile-first content assistant for HomeDog's social media, events, and ad campaigns. Built as a static site — no server, no API keys, no monthly costs. Hosted free on GitHub Pages.
+  --font-body: 'Sora', sans-serif;
+  --font-display: 'Fraunces', serif;
+  --radius: 14px;
+  --radius-sm: 10px;
+  --radius-xs: 6px;
+  --shadow-sm: 0 1px 4px rgba(44,41,38,0.05);
+  --shadow-md: 0 4px 14px rgba(44,41,38,0.07);
+  --shadow-lg: 0 8px 30px rgba(44,41,38,0.1);
+  --nav-h: 68px;
+  --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
 
-## What Paws Does
+/* ═══════════ RESET ═══════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{
+  font-family:var(--font-body);
+  background:var(--hd-cream);
+  color:var(--hd-text);
+  line-height:1.55;
+  min-height:100dvh;
+  padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom, 0px) + 8px);
+  -webkit-font-smoothing:antialiased;
+}
+img{max-width:100%;display:block}
+button{font-family:var(--font-body)}
 
-- **Paste your raw notes** → get polished, on-brand content for Instagram, Facebook, TikTok, Eventbrite, and ad platforms
-- **Pre-built templates** for puppy yoga, vendor markets, adoption events, private parties, coworking promos, and more
-- **Auto-generated hashtags** tailored per platform
-- **Ad copy variants** (A/B testing) for Meta, Google, and TikTok ads
-- **Photo upload** with Instagram Story text overlay preview and composite image export
-- **Content calendar** to schedule and visualize upcoming posts
-- **Performance tracking** to rate posts and see what works best
-- **Voice-to-text** input for on-the-go brain dumps
-- **Works on iPhone, Android, and desktop browsers** (Safari, Chrome, Edge, Firefox)
+/* ═══════════ HEADER ═══════════ */
+.hdr{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 20px;
+  background:var(--hd-charcoal);
+  background-image:linear-gradient(135deg, var(--hd-charcoal) 0%, #38322E 100%);
+  position:sticky;top:0;z-index:100;
+  box-shadow:0 2px 12px rgba(44,41,38,0.15);
+}
+.hdr-logo{font-size:1.6rem;line-height:1}
+.hdr-text h1{
+  font-family:var(--font-display);
+  font-size:1.35rem;font-weight:700;
+  color:var(--hd-terracotta-light);letter-spacing:-0.02em;line-height:1.1;
+}
+.hdr-text span{font-size:0.65rem;color:var(--hd-sand);letter-spacing:0.08em;text-transform:uppercase}
 
----
+/* ═══════════ BOTTOM NAV ═══════════ */
+.bnav{
+  position:fixed;bottom:0;left:0;right:0;
+  height:var(--nav-h);
+  background:var(--hd-beige);
+  border-top:1px solid var(--hd-border);
+  display:flex;justify-content:space-around;align-items:center;
+  z-index:200;
+  padding-bottom:env(safe-area-inset-bottom,0);
+}
+.bnav-btn{
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:6px 0;border:none;background:none;
+  color:var(--hd-text-light);font-size:0.65rem;font-weight:500;
+  cursor:pointer;min-width:60px;min-height:44px;
+  transition:color var(--transition);
+  -webkit-tap-highlight-color:transparent;
+  letter-spacing:0.02em;
+}
+.bnav-btn .ico{font-size:1.25rem;transition:transform var(--transition);display:flex;align-items:center;justify-content:center}
+.bnav-btn svg{width:20px;height:20px}
+.bnav-btn.on{color:var(--hd-terracotta)}
+.bnav-btn.on .ico{transform:scale(1.1)}
 
-## Setup Instructions (Step by Step)
+/* ═══════════ TABS ═══════════ */
+.tab{display:none;padding:20px 16px;max-width:600px;margin:0 auto}
+.tab.on{display:block}
 
-### You'll need:
-- A GitHub account (free) — sign up at [github.com](https://github.com)
-- About 10 minutes
+/* ═══════════ FORM ═══════════ */
+.fg{margin-bottom:14px}
+.fg label{
+  display:block;font-size:0.78rem;font-weight:600;
+  color:var(--hd-text-mid);margin-bottom:4px;
+  letter-spacing:0.02em;
+}
+.fg input[type="text"],.fg input[type="date"],.fg input[type="time"],
+.fg select,.fg textarea{
+  width:100%;padding:10px 12px;
+  border:1.5px solid var(--hd-border);border-radius:var(--radius-sm);
+  font-size:0.88rem;font-family:var(--font-body);
+  background:var(--hd-white);color:var(--hd-text);
+  transition:border-color var(--transition),box-shadow var(--transition);
+  -webkit-appearance:none;appearance:none;
+}
+.fg input:focus,.fg select:focus,.fg textarea:focus{
+  outline:none;border-color:var(--hd-terracotta);
+  box-shadow:0 0 0 3px rgba(196,112,63,0.1);
+}
+.fg textarea{min-height:100px;resize:vertical}
+.fg select{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%235C5650' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;
+  padding-right:32px;
+}
 
-### Step 1: Create a New Repository
+/* Notes + mic */
+.notes-wrap{position:relative}
+.notes-wrap textarea{padding-right:50px}
+.mic-btn{
+  position:absolute;right:8px;top:8px;
+  width:36px;height:36px;border-radius:50%;
+  border:1.5px solid var(--hd-border);background:var(--hd-card);
+  font-size:1rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all var(--transition);
+}
+.mic-btn.rec{background:var(--hd-error);color:#fff;border-color:var(--hd-error);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
 
-1. Go to [github.com/new](https://github.com/new)
-2. **Repository name:** `homedog-content-generator`
-3. **Description:** `HomeDog social media content generator`
-4. Set it to **Public** (required for free GitHub Pages hosting)
-5. Check **"Add a README file"** (we'll replace it)
-6. Click **Create repository**
+/* ═══════════ PLATFORM GRID ═══════════ */
+.plat-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.plat-opt{
+  display:flex;align-items:center;gap:8px;
+  padding:9px 10px;border:1.5px solid var(--hd-border);
+  border-radius:var(--radius-sm);cursor:pointer;
+  font-size:0.8rem;font-weight:500;min-height:42px;
+  transition:all var(--transition);
+  -webkit-tap-highlight-color:transparent;
+}
+.plat-opt:has(input:checked){border-color:var(--hd-terracotta);background:rgba(196,112,63,0.08);box-shadow:0 0 0 1px rgba(196,112,63,0.15)}
+.plat-opt input{accent-color:var(--hd-terracotta);margin:0}
 
-### Step 2: Upload the Files
+/* ═══════════ TOGGLE ═══════════ */
+.tog-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0}
+.tog-row label{font-size:0.82rem;font-weight:500;color:var(--hd-text)}
+.tog{position:relative;width:44px;height:26px;flex-shrink:0}
+.tog input{opacity:0;width:0;height:0}
+.tog-sl{
+  position:absolute;inset:0;background:var(--hd-border);border-radius:13px;
+  cursor:pointer;transition:var(--transition);
+}
+.tog-sl::before{
+  content:"";position:absolute;width:20px;height:20px;border-radius:50%;
+  background:#fff;left:3px;top:3px;transition:var(--transition);
+  box-shadow:0 1px 3px rgba(0,0,0,0.15);
+}
+.tog input:checked+.tog-sl{background:var(--hd-terracotta)}
+.tog input:checked+.tog-sl::before{transform:translateX(18px)}
 
-**Option A: Upload via GitHub Web (easiest)**
+/* ═══════════ PHOTO UPLOAD ═══════════ */
+.photo-area{
+  border:2px dashed var(--hd-border);border-radius:var(--radius);
+  padding:20px;text-align:center;cursor:pointer;
+  transition:all var(--transition);color:var(--hd-text-light);
+}
+.photo-area:hover,.photo-area.dragover{border-color:var(--hd-terracotta);background:rgba(196,112,63,0.04)}
+.photo-area .ico{font-size:1.6rem;margin-bottom:2px}
+.photo-area .txt{font-size:0.78rem}
+.photo-area .sub{font-size:0.68rem;color:var(--hd-text-light)}
+.thumbs{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.thumb{position:relative;width:60px;height:60px;border-radius:var(--radius-xs);overflow:hidden}
+.thumb img{width:100%;height:100%;object-fit:cover}
+.thumb-x{
+  position:absolute;top:2px;right:2px;width:18px;height:18px;
+  border-radius:50%;border:none;background:rgba(0,0,0,0.55);color:#fff;
+  font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+}
 
-1. In your new repo, click **"Add file"** → **"Upload files"**
-2. Drag and drop ALL the files and folders from this project:
-   - `index.html`
-   - `css/` folder (with `style.css` inside)
-   - `js/` folder (with all `.js` files inside)
-   - `README.md` (this file — will replace the one GitHub created)
-3. Scroll down, type a commit message like `Initial upload`
-4. Click **"Commit changes"**
+/* ═══════════ BUTTONS ═══════════ */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  padding:10px 18px;border:1.5px solid var(--hd-border);
+  border-radius:var(--radius-sm);background:var(--hd-card);
+  color:var(--hd-text);font-family:var(--font-body);
+  font-size:0.82rem;font-weight:600;cursor:pointer;
+  min-height:42px;transition:all var(--transition);
+  -webkit-tap-highlight-color:transparent;
+}
+.btn:active{transform:scale(0.97)}
+.btn-p{background:var(--hd-terracotta);color:#fff;border-color:var(--hd-terracotta)}
+.btn-p:hover{background:var(--hd-terracotta-light);transform:translateY(-1px);box-shadow:var(--shadow-md)}
+.btn-s{font-size:0.75rem;padding:7px 12px;min-height:34px}
+.btn-g{
+  position:sticky;bottom:calc(var(--nav-h) + 12px);
+  width:100%;padding:14px;font-size:0.95rem;
+  z-index:50;box-shadow:var(--shadow-lg);
+  letter-spacing:0.01em;
+  border-radius:var(--radius);
+}
 
-**Important:** GitHub's file uploader can be finicky with folders. If it flattens everything, you may need to create the folders first:
-- Click **"Add file"** → **"Create new file"**
-- Type `css/style.css` in the filename field (this creates the folder automatically)
-- Paste the contents of `style.css`
-- Repeat for each file in the `js/` folder
+/* ═══════════ HIDE/SHOW ═══════════ */
+.hide{display:none!important}
 
-**Option B: Upload via Git command line (if comfortable)**
+/* ═══════════ OUTPUT CARDS ═══════════ */
+.out-sec{margin-top:28px}
+.out-sec>h2{
+  font-family:var(--font-display);font-size:1.2rem;
+  color:var(--hd-terracotta);margin-bottom:14px;
+}
+.ocard{
+  background:var(--hd-card);border:1px solid var(--hd-border);
+  border-radius:var(--radius);padding:16px;margin-bottom:10px;
+  box-shadow:var(--shadow-sm);
+  border-left:3px solid var(--hd-terracotta);
+  position:relative;overflow:hidden;
+}
+.ocard::after{
+  content:"🐾";position:absolute;right:-4px;bottom:-6px;
+  font-size:3rem;opacity:0.04;pointer-events:none;
+}
+.ocard-hdr{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--hd-border);
+}
+.ocard-hdr h3{
+  font-family:var(--font-display);font-size:0.95rem;
+  color:var(--hd-terracotta);font-weight:600;
+}
+.ocard-hdr button{
+  width:34px;height:34px;border:none;background:none;
+  font-size:1.15rem;cursor:pointer;color:var(--hd-text-light);
+  border-radius:50%;transition:background var(--transition);
+}
+.ocard-hdr button:hover{background:var(--hd-sand)}
+.otxt{font-size:0.85rem;line-height:1.65;white-space:pre-wrap;margin-bottom:8px}
+.otags{font-size:0.78rem;color:var(--hd-sage);margin-bottom:6px;word-break:break-all}
+.ometa{font-size:0.7rem;color:var(--hd-text-light);margin-bottom:6px}
+.ometa.warn{color:var(--hd-error)}
+.ofield{font-size:0.82rem;margin-bottom:5px}
+.ofield b{color:var(--hd-text-mid);font-weight:600}
+.oacts{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.copied{background:var(--hd-sage)!important;color:#fff!important;border-color:var(--hd-sage)!important}
 
-```bash
-git clone https://github.com/YOUR_USERNAME/homedog-content-generator.git
-cd homedog-content-generator
+/* Story Preview */
+.story-prev{
+  position:relative;width:100%;max-width:220px;
+  aspect-ratio:9/16;margin:0 auto 12px;
+  border-radius:var(--radius);overflow:hidden;background:#1a1a1a;
+}
+.story-prev img,.story-prev .story-ph{width:100%;height:100%;object-fit:cover}
+.story-ph{background:linear-gradient(135deg,var(--hd-terracotta),var(--hd-sage))}
+.story-ov{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:6px;
+  padding:16px;background:rgba(0,0,0,0.25);
+}
+.story-ov .l1{font-size:0.9rem;font-weight:700;color:#fff;text-align:center;text-shadow:0 2px 8px rgba(0,0,0,0.5)}
+.story-ov .l2{font-size:0.72rem;color:#fff;text-align:center;text-shadow:0 2px 6px rgba(0,0,0,0.5)}
+.story-ov .l3{font-size:0.68rem;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:1.5px;text-shadow:0 2px 6px rgba(0,0,0,0.5)}
 
-# Copy all project files into this folder, then:
-git add .
-git commit -m "Initial upload"
-git push origin main
-```
+/* Ad variant */
+.adv{padding:10px 0;border-bottom:1px solid var(--hd-border)}
+.adv:last-child{border-bottom:none}
+.adv-lbl{font-size:0.68rem;font-weight:700;color:var(--hd-sage);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px}
+.chrc{font-size:0.65rem;color:var(--hd-text-light)}
 
-### Step 3: Enable GitHub Pages
+.out-acts{display:flex;gap:8px;margin-top:16px}
 
-1. Go to your repo's **Settings** tab (gear icon)
-2. In the left sidebar, click **Pages**
-3. Under **"Source"**, select **"Deploy from a branch"**
-4. Under **"Branch"**, select **main** and **/ (root)**
-5. Click **Save**
-6. Wait 1-2 minutes, then refresh the page
-7. You'll see a green box with your live URL:
-   `https://YOUR_USERNAME.github.io/homedog-content-generator/`
+/* ═══════════ CALENDAR ═══════════ */
+.cal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.cal-hdr h2{font-family:var(--font-display);font-size:1.1rem}
+.cal-hdr button{
+  width:38px;height:38px;border:none;background:none;
+  font-size:1.4rem;cursor:pointer;color:var(--hd-terracotta);
+  border-radius:50%;transition:background var(--transition);
+}
+.cal-hdr button:hover{background:var(--hd-sand)}
+.cal-today{text-align:center;margin-bottom:12px}
+.cal-g{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.cal-dl{text-align:center;font-size:0.65rem;font-weight:600;color:var(--hd-text-light);padding:4px 0}
+.cal-c{
+  aspect-ratio:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  border-radius:var(--radius-xs);font-size:0.82rem;position:relative;gap:2px;
+}
+.cal-c.today{background:rgba(196,112,63,0.1);font-weight:700}
+.cal-c.has{cursor:pointer;background:rgba(107,143,113,0.1)}
+.cal-c.has:active{background:rgba(107,143,113,0.2)}
+.cal-dot{
+  width:16px;height:16px;border-radius:50%;background:var(--hd-sage);
+  color:#fff;font-size:0.55rem;display:flex;align-items:center;
+  justify-content:center;font-weight:700;
+}
+.cal-un{margin-top:18px;padding-top:14px;border-top:1px solid var(--hd-border)}
+.cal-un h3{font-size:0.85rem;color:var(--hd-text-light);margin-bottom:8px}
+.cal-det{
+  margin-top:14px;padding:14px;background:var(--hd-card);
+  border-radius:var(--radius);border:1px solid var(--hd-border);
+}
+.cal-det h3{margin-bottom:10px;font-family:var(--font-display)}
 
-### Step 4: Use It!
+/* ═══════════ DRAFTS ═══════════ */
+.dcard{
+  background:var(--hd-card);border:1px solid var(--hd-border);
+  border-radius:var(--radius);padding:14px;margin-bottom:8px;
+}
+.dcard-hdr{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.dbadge{
+  display:inline-block;padding:2px 8px;border-radius:4px;
+  font-size:0.65rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:0.5px;background:rgba(196,112,63,0.1);color:var(--hd-terracotta);
+}
+.ddate{font-size:0.75rem;color:var(--hd-text-light)}
+.dcard-hdr .dx{
+  margin-left:auto;font-size:1.1rem;color:var(--hd-text-light);
+  border:none;background:none;cursor:pointer;width:34px;height:34px;
+  display:flex;align-items:center;justify-content:center;
+}
+.dprev{font-size:0.82rem;color:var(--hd-text);margin-bottom:4px}
+.dplat{font-size:0.7rem;color:var(--hd-text-light)}
+.drating{color:var(--hd-star);font-size:0.85rem;margin-top:3px}
+.dsaved{font-size:0.65rem;color:var(--hd-text-light);margin-top:3px}
+.dcard-click{cursor:pointer;transition:box-shadow var(--transition)}
+.dcard-click:hover{box-shadow:var(--shadow-md)}
+.dcard-toggle{
+  font-size:0.7rem;color:var(--hd-terracotta);font-weight:600;
+  margin-top:8px;text-align:center;letter-spacing:0.02em;
+}
+.dexp{
+  margin-top:12px;padding-top:12px;border-top:1px solid var(--hd-border);
+}
+.dexp-plat{margin-bottom:12px}
+.dexp-plat-name{
+  font-size:0.7rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:0.5px;color:var(--hd-terracotta);margin-bottom:4px;
+}
+.dexp-text{font-size:0.82rem;line-height:1.6;white-space:pre-wrap;margin-bottom:4px}
+.dexp-tags{font-size:0.75rem;color:var(--hd-sage);margin-bottom:6px;word-break:break-all}
+.dexp-acts{display:flex;gap:6px;margin-top:4px}
+.dmini{padding:8px;border-bottom:1px solid var(--hd-border);font-size:0.78rem}
+.dmini b{margin-right:4px}
+.swarn{
+  background:rgba(212,168,67,0.1);color:var(--hd-gold);
+  padding:8px 12px;border-radius:var(--radius-xs);font-size:0.78rem;margin-bottom:10px;
+}
 
-1. Open that URL on your phone or computer
-2. **Bookmark it** or add it to your home screen:
-   - **iPhone:** Open in Safari → tap Share → "Add to Home Screen"
-   - **Android:** Open in Chrome → tap three dots → "Add to Home Screen"
-3. It now works like an app — no app store needed!
+/* ═══════════ PERFORMANCE ═══════════ */
+.pov{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px}
+.pstat{
+  background:var(--hd-card);border:1px solid var(--hd-border);
+  border-radius:var(--radius);padding:14px;text-align:center;
+}
+.pstat .num{
+  display:block;font-family:var(--font-display);
+  font-size:1.5rem;font-weight:700;color:var(--hd-terracotta);line-height:1.2;
+}
+.pstat .lbl{font-size:0.65rem;color:var(--hd-text-light);text-transform:uppercase;letter-spacing:0.5px}
+.psec{margin-bottom:22px}
+.psec h3{font-family:var(--font-display);font-size:0.95rem;margin-bottom:10px}
+.pbar-row{display:grid;grid-template-columns:72px 1fr 28px;align-items:center;gap:6px;margin-bottom:6px}
+.pbar-lbl{font-size:0.72rem;font-weight:600;text-transform:capitalize}
+.pbar-trk{height:10px;background:var(--hd-sand);border-radius:5px;overflow:hidden}
+.pbar-fill{height:100%;background:var(--hd-terracotta);border-radius:5px;transition:width 0.5s ease}
+.pbar-val{font-size:0.75rem;font-weight:600;color:var(--hd-text-light)}
 
----
+/* Rating */
+.rcard{
+  background:var(--hd-card);border:1px solid var(--hd-border);
+  border-radius:var(--radius);padding:14px;margin-bottom:8px;
+}
+.stars{display:flex;gap:2px;margin:6px 0}
+.star{
+  font-size:1.5rem;background:none;border:none;cursor:pointer;
+  color:var(--hd-border);padding:0 2px;min-width:44px;min-height:44px;
+  display:flex;align-items:center;justify-content:center;transition:color 0.15s;
+}
+.star.on,.star:hover{color:var(--hd-star)}
+.rnotes{margin-bottom:6px}
 
-## How to Use
+/* ═══════════ TOAST ═══════════ */
+#toast{
+  position:fixed;bottom:calc(var(--nav-h) + 16px);
+  left:50%;transform:translateX(-50%) translateY(16px);
+  background:var(--hd-charcoal);color:var(--hd-cream);
+  padding:10px 22px;border-radius:20px;font-size:0.82rem;font-weight:600;
+  opacity:0;pointer-events:none;transition:all 0.3s ease;z-index:300;white-space:nowrap;
+}
+#toast.vis{opacity:1;transform:translateX(-50%) translateY(0)}
 
-### Quick Start (60-second workflow):
+/* ═══════════ EMPTY ═══════════ */
+.empty{text-align:center;padding:36px 16px;color:var(--hd-text-light)}
+.empty h3{margin-bottom:6px;color:var(--hd-text);font-family:var(--font-display)}
 
-1. **Pick your content type** (Event, Daily Post, Promo, etc.)
-2. **Check the platforms** you want content for
-3. **Paste your raw notes** — messy is fine! E.g.:
-   > puppy yoga saturday march 22 10am with pawsco rescue free for members $15 drop-in
-4. **Tap Generate** 🐾
-5. **Copy** the output for each platform and paste into your app
-6. **Save as draft** if you want to come back to it
+/* ═══════════ DESKTOP ═══════════ */
+@media(min-width:768px){
+  body{padding-bottom:0}
+  .bnav{position:static;border-top:none;border-bottom:1px solid var(--hd-border);justify-content:center;gap:0;background:var(--hd-beige)}
+  .bnav-btn{flex-direction:row;gap:6px;padding:14px 24px;font-size:0.8rem;border-bottom:2px solid transparent;border-radius:0;color:var(--hd-text-light)}
+  .bnav-btn.on{border-bottom-color:var(--hd-terracotta);color:var(--hd-terracotta)}
+  .tab{max-width:640px;padding:28px 20px}
+  .plat-grid{grid-template-columns:1fr 1fr 1fr}
+  .pov{grid-template-columns:repeat(4,1fr)}
+  .btn-g{position:static;box-shadow:none;max-width:280px}
+}
+</style>
+</head>
+<body>
 
-### Tips:
-- Use the **🎤 mic button** next to the notes field to dictate on the go
-- **Upload a photo** to see a Story text preview and save a composite image
-- Check **"This is a paid post"** to generate ad copy variants for A/B testing
-- **Set a Post Date** to see your content on the Calendar tab
-- After posting, go to the **Performance tab** and rate how it did (1-5 stars)
+<header class="hdr">
+  <span class="hdr-logo">🐾</span>
+  <div class="hdr-text">
+    <h1>Paws</h1>
+    <span>by HomeDog</span>
+  </div>
+</header>
 
----
+<nav class="bnav">
+  <button class="bnav-btn on" data-tab="create"><span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></span><span>Create</span></button>
+  <button class="bnav-btn" data-tab="calendar"><span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span><span>Calendar</span></button>
+  <button class="bnav-btn" data-tab="drafts"><span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span><span>Drafts</span></button>
+  <button class="bnav-btn" data-tab="perf"><span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span><span>Performance</span></button>
+</nav>
 
-## File Structure
+<!-- ═══ CREATE ═══ -->
+<main id="t-create" class="tab on">
+  <div style="margin-bottom:18px;padding:14px 16px;background:var(--hd-sand);border-radius:var(--radius);text-align:center">
+    <span style="font-size:1.3rem">🐾</span>
+    <p style="font-family:var(--font-display);font-size:0.95rem;color:var(--hd-charcoal);margin-top:4px">What are we fetching today?</p>
+  </div>
+  <div class="fg">
+    <label for="cType">What are you posting?</label>
+    <select id="cType"><option value="event">Event</option><option value="daily">Daily / Story</option><option value="promo">Membership / Promo</option><option value="general">General Post</option></select>
+  </div>
+  <div id="evFields">
+    <div class="fg"><label for="evType">Event Type</label>
+      <select id="evType"><option value="puppy-yoga">Puppy Yoga</option><option value="vendor-market">Vendor Market / Pop-Up</option><option value="adoption">Adoption Event</option><option value="private-party">Private Party / Corporate</option><option value="coworking-promo">Coworking Promo</option><option value="run-club">Run Club</option><option value="record-club">Record / Vinyl Night</option><option value="singles-night">Singles Night</option><option value="concert">Concert / Live Music</option><option value="general">Other / Custom</option></select>
+    </div>
+    <div class="fg"><label for="evName">Event Name</label><input type="text" id="evName" placeholder="e.g., Paws & Flow Puppy Yoga"></div>
+    <div class="fg"><label for="evDate">Event Date</label><input type="date" id="evDate"></div>
+    <div class="fg"><label for="evTime">Event Time</label><input type="text" id="evTime" placeholder="e.g., 10am - 12pm"></div>
+    <div class="fg"><label for="evPrice">Price</label><input type="text" id="evPrice" placeholder="e.g., Free, $15, Free for members / $15 drop-in"></div>
+    <div class="fg"><label for="evPartner">Partner / Collaborator</label><input type="text" id="evPartner" placeholder="e.g., PawsCo Rescue"></div>
+    <div class="fg"><label for="evAud">Target Audience (optional)</label><input type="text" id="evAud" placeholder="e.g., singles 25-40, dog moms, remote workers"></div>
+  </div>
 
-```
-homedog-content-generator/
-├── index.html          # Main app
-├── css/
-│   └── style.css       # All styles (mobile-first, dark mode)
-├── js/
-│   ├── app.js          # App logic, navigation, UI
-│   ├── theme.js        # Brand config (colors, copy, links)
-│   ├── templates.js    # Content templates, hooks, CTAs
-│   ├── hashtags.js     # Hashtag sets and assembly
-│   ├── generator.js    # Content generation engine
-│   ├── speech.js       # Voice-to-text
-│   └── storage.js      # Draft/rating management
-└── README.md           # This file
-```
+  <div class="fg"><label>Where are you posting?</label>
+    <div class="plat-grid">
+      <label class="plat-opt"><input type="checkbox" class="pck" value="instagram" checked> Instagram</label>
+      <label class="plat-opt"><input type="checkbox" class="pck" value="story"> IG Story</label>
+      <label class="plat-opt"><input type="checkbox" class="pck" value="facebook"> Facebook</label>
+      <label class="plat-opt"><input type="checkbox" class="pck" value="tiktok"> TikTok</label>
+      <label class="plat-opt"><input type="checkbox" class="pck" value="eventbrite"> Eventbrite</label>
+      <label class="plat-opt"><input type="checkbox" class="pck" value="ad-copy"> Ad Copy</label>
+    </div>
+  </div>
 
-## Rebranding for Another Business
+  <div class="tog-row"><label for="isPaid">Paid / promoted post</label><label class="tog"><input type="checkbox" id="isPaid"><span class="tog-sl"></span></label></div>
+  <div id="adF" class="hide">
+    <div class="fg"><label for="cGoal">Campaign Goal</label><select id="cGoal"><option value="awareness">Awareness</option><option value="signups">Event Signups</option><option value="memberships">Membership Sales</option><option value="traffic">General Traffic</option></select></div>
+  </div>
 
-All HomeDog-specific values live in `js/theme.js`. To rebrand:
+  <div class="fg"><label for="postDate">Post Date</label><input type="date" id="postDate"></div>
 
-1. Edit `js/theme.js` — change colors, name, address, links, boilerplate
-2. Edit `js/templates.js` — update hooks, body templates, and CTAs
-3. Edit `js/hashtags.js` — replace hashtag sets
-4. That's it — the rest of the app reads from these files
+  <div class="fg"><label>Photo (optional)</label>
+    <div class="photo-area" id="phArea"><div class="ico">📷</div><div class="txt">Tap to upload or drag photo</div><div class="sub">JPG, PNG, HEIC, WEBP — up to 10</div></div>
+    <input type="file" id="phIn" accept="image/*" multiple hidden>
+    <div class="thumbs" id="phThumbs"></div>
+  </div>
 
----
+  <div class="fg"><label for="rawNotes">Tell Paws what's up</label>
+    <div class="notes-wrap"><textarea id="rawNotes" placeholder="Brain dump here... e.g., puppy yoga saturday march 22 10am with pawsco free for members $15 drop-in bring your own mat"></textarea><button type="button" class="mic-btn" id="micBtn" title="Voice input">🎤</button></div>
+  </div>
 
-## Browser Support
+  <div class="fg"><label for="cHash">Custom Hashtags (optional)</label><input type="text" id="cHash" placeholder="#DenverPuppyYoga #WashPark"></div>
+  <div class="fg"><label for="tone">Tone</label><select id="tone"><option value="default">Default (playful + warm)</option><option value="playful">Extra Playful</option><option value="informative">More Serious</option><option value="hype">Hype / Excited</option></select></div>
 
-| Platform | Browser | Status |
-|----------|---------|--------|
-| iPhone | Safari (iOS 15+) | ✅ Full support |
-| Android | Chrome (10+) | ✅ Full support |
-| Mac | Safari | ✅ Full support |
-| Windows | Chrome | ✅ Full support |
-| Windows | Edge | ✅ Full support |
-| Any | Firefox | ✅ (voice input limited) |
+  <button class="btn btn-p btn-g" id="genBtn">🐾 Let Paws Chew On This</button>
 
----
+  <section id="outSec" class="out-sec hide">
+    <h2>Paws fetched your content 🐕</h2>
+    <div id="outCards"></div>
+    <div id="outActs" class="out-acts"></div>
+  </section>
+</main>
 
-Built with ❤️ for the HomeDog pack. Paws has your back.
+<!-- ═══ CALENDAR ═══ -->
+<section id="t-calendar" class="tab"><div id="calView"></div><div id="calDet" class="cal-det hide"></div></section>
+
+<!-- ═══ DRAFTS ═══ -->
+<section id="t-drafts" class="tab"><h2 style="font-family:var(--font-display);margin-bottom:12px">Saved Drafts</h2><div id="dList"></div></section>
+
+<!-- ═══ PERFORMANCE ═══ -->
+<section id="t-perf" class="tab"><h2 style="font-family:var(--font-display);margin-bottom:12px">Performance</h2><div id="perfView"></div></section>
+
+<div id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════════════════════
+   PAWS — HomeDog Content Assistant — All-in-One JS
+   ═══════════════════════════════════════════════════ */
+
+// ── THEME ──
+const T={
+  name:"HomeDog",email:"contact@thehomedog.co",addr:"1710 South Broadway, Denver, CO 80210",
+  web:"thehomedog.co",ig:"@thehomedogco",
+  bp:"HomeDog is Denver's first dog-friendly social hub — combining coworking, professional dog daycare, a full cafe and bar, and community events all in one space at 1710 South Broadway. Whether you're a member or just stopping by, you (and your pup) are always welcome. Learn more at thehomedog.co"
+};
+
+// ── HASHTAGS ──
+const HT={
+  core:["#HomeDog","#HomeDogsOfDenver","#DogFriendlyDenver"],
+  loc:["#SoBoDenver","#PlattPark","#SouthBroadwayDenver","#DenverDogLife","#DenverDogs","#DenverDogCommunity","#DogFriendlyCoworking","#DenverCoworking","#DenverLocal"],
+  svc:["#DogDaycareDenver","#DogBoardingDenver","#CoworkWithYourDog","#DogFriendlyCafe","#DogFriendlyBar","#DogFriendlyEvents"],
+  eng:["#DogsOfInstagram","#DogLife","#DogMom","#DogDad","#DogCommunity","#GoodBoy","#GoodGirl","#WhoRescuedWho"],
+  ev:{"puppy-yoga":["#PuppyYoga","#PawsAndFlow","#DogYoga"],"vendor-market":["#DenverPopUp","#LocalVendors","#DogMarket"],"adoption":["#AdoptDontShop","#RescueDog","#DenverRescue"],"private-party":["#DenverEventVenue","#DogFriendlyVenue","#PrivateEvents"],"coworking-promo":["#CoworkWithYourDog","#DogFriendlyCoworking","#DenverCoworking"],"run-club":["#RunClub","#DogRunClub","#DenverRunClub"],"record-club":["#VinylNight","#RecordClub","#DenverMusic"],"singles-night":["#DogPeopleMeetDogPeople","#SinglesNight","#DenverSingles"],"concert":["#LiveMusicDenver","#DogFriendlyConcert"],"general":[]}
+};
+function shuf(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
+function mkTags(p,et,custom=""){
+  let t=[...HT.core,...(HT.ev[et]||[])];
+  const lim={instagram:{l:4,s:2,e:3,t:15},facebook:{l:1,s:1,e:1,t:5},tiktok:{l:2,s:1,e:2,t:8},eventbrite:{l:1,s:1,e:0,t:5}};
+  const L=lim[p]||lim.instagram;
+  t.push(...shuf(HT.loc).slice(0,L.l),...shuf(HT.svc).slice(0,L.s),...shuf(HT.eng).slice(0,L.e));
+  if(custom.trim())t.push(...custom.split(/[\s,]+/).map(x=>x.startsWith("#")?x:"#"+x));
+  return[...new Set(t)].slice(0,L.t);
+}
+
+// ── TEMPLATES ──
+const HOOKS={
+  "puppy-yoga":["Downward dog just got a whole lot cuter 🐶","Stretch, snuggle, repeat. Puppy Yoga is BACK!","Your mat. A pile of puppies. Need we say more?","The only yoga class where drool is encouraged."],
+  "vendor-market":["Shop local, pet dogs. Best Saturday ever? 🐕","The HomeDog Collective is back!","Good vibes, good vendors, good boys."],
+  "adoption":["Your new best friend might be waiting for you 🐾","Come for the coffee, stay for the puppy kisses.","Every dog deserves a home. Meet your match at HomeDog."],
+  "private-party":["Your next event just got a serious upgrade 🎉","Dog-friendly. Art-forward. Unforgettable.","Book the coolest venue on South Broadway."],
+  "coworking-promo":["Work from home... but make it HomeDog 💻","Your dog called. They want you to try HomeDog coworking.","WiFi. Espresso. Your dog under the desk. No corporate vibes."],
+  "run-club":["Lace up, leash up. Run club is on!","Miles are better with your pack 🐕"],
+  "record-club":["Crates, coffee, and canines. Vinyl night at HomeDog 🎶","Good tunes. Good company. Good boys."],
+  "singles-night":["Dog people, meet dog people 🐾","The icebreaker is built in — just pet the dog."],
+  "concert":["Live music hits different with a dog at your feet 🎶","Dog-friendly live music on South Broadway."],
+  "general":["Another day at Denver's favorite dog-friendly hangout 🐕","This is what COmmunity looks like.","Pups, people, and good vibes on South Broadway."],
+  "daily":["This is the vibe today at HomeDog 🐾","Just a regular day in paradise.","Scenes from your favorite second home.","If you know, you know."]
+};
+const BODS={
+  "puppy-yoga":"Join us {date} at {time} for Puppy Yoga at HomeDog! {pl}Roll out your mat surrounded by adorable rescue pups. {pr}Spots fill up fast!",
+  "vendor-market":"Join us {date} from {time} for {en}! {pl}Browse local vendors, grab a drink, and bring your pup. {pr}",
+  "adoption":"We're teaming up with {pn} for an adoption event! {date} from {time}. Meet adoptable dogs, enjoy our cafe and bar, and maybe bring home a new family member. {pr}",
+  "private-party":"Looking for a one-of-a-kind venue? HomeDog's indoor/outdoor space with local art, a full bar, and dog-friendly vibes makes every event unforgettable. DM us or email "+T.email+" for details!",
+  "coworking-promo":"Memberships start at $95/month with unlimited coworking, daycare credits, and drink discounts. Or grab a $25 day pass and see what the hype is about.",
+  "run-club":"Join the pack {date} at {time} for run club! {pl}All paces welcome — bring your pup. {pr}",
+  "record-club":"Vinyl lovers, this one's for you. {en} — {date} at {time}. {pl}Bring your favorite records and grab a drink. {pr}",
+  "singles-night":"Dog people, meet your people. {en} — {date} at {time}. {pl}Mingle, sip, and let the pups be your wingmen. {pr}",
+  "concert":"Live music at HomeDog! {en} — {date} at {time}. {pl}Grab a local draft and bring your pup. {pr}",
+  "general":"{en} is happening at HomeDog! {date} {tl}. {desc} {pl}{pr}",
+  "daily":"{desc}"
+};
+const CTAS={
+  instagram:["Link in bio for details!","Tag a friend who needs this 🐾","Drop a 🐾 if you're coming!","Save this post!","See you there!"],
+  facebook:["Tag a friend and make it a date!","Share with your dog-loving crew!","More details at thehomedog.co"],
+  tiktok:["Link in bio!","Who's coming? 🐾","POV: your dog's new favorite hangout"],
+  story:["Swipe up!","Tap for details","See you there!","Link in bio"]
+};
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+function fmtDate(d){if(!d)return"";try{return new Date(d+"T00:00:00").toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"})}catch{return d}}
+function fmtPr(p){if(!p)return"";if(p.toLowerCase()==="free")return"Free to attend! ";return p+". "}
+function fill(tpl,d){
+  return tpl.replace(/{date}/g,d.date||"[date TBD]").replace(/{time}/g,d.time||"[time TBD]")
+    .replace(/{tl}/g,d.time?"at "+d.time:"").replace(/{en}/g,d.en||"Our next event")
+    .replace(/{pn}/g,d.partner||"").replace(/{pl}/g,d.partner?"In partnership with "+d.partner+". ":"")
+    .replace(/{pr}/g,fmtPr(d.price)).replace(/{desc}/g,d.desc||"").replace(/  +/g," ").trim();
+}
+
+// ── PARSE RAW NOTES ──
+function parse(n){
+  const r={desc:n};if(!n)return r;
+  let m=n.match(/(\d{4}-\d{2}-\d{2})/)||n.match(/(\d{1,2}\/\d{1,2}(?:\/\d{2,4})?)/)||n.match(/((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\w*\.?\s+\d{1,2}(?:,?\s*\d{4})?)/i);
+  if(m)r.dateRaw=m[1];
+  m=n.match(/(\d{1,2}(?::\d{2})?\s*(?:am|pm)(?:\s*-\s*\d{1,2}(?::\d{2})?\s*(?:am|pm))?)/i);if(m)r.time=m[1];
+  m=n.match(/(\$\d+(?:\.\d{2})?(?:\s*[-\/]\s*\$?\d+(?:\.\d{2})?)?|free(?:\s+for\s+\w+)?(?:\s*[\/,]\s*\$\d+[^.\n]*)?)/i);if(m)r.price=m[1];
+  m=n.match(/(?:with|featuring|feat\.?|collab\w*\s+with|hosted\s+by|presented\s+by)\s+([A-Z][A-Za-z\s'&]+)/);if(m)r.partner=m[1].trim();
+  const fl=n.split("\n")[0].trim();if(fl&&fl.length<80&&!/^\d|^\$/i.test(fl))r.en=fl;
+  return r;
+}
+
+// ── GENERATE ──
+function generate(fd){
+  const p=parse(fd.rawNotes);
+  const d={en:fd.evName||p.en||"",date:fd.date?fmtDate(fd.date):(p.dateRaw||""),time:fd.time||p.time||"",price:fd.price||p.price||"",partner:fd.partner||p.partner||"",desc:fd.rawNotes||""};
+  let tk=fd.evType||"general";if(fd.cType==="daily")tk="daily";if(fd.cType==="promo")tk="coworking-promo";
+  const res={};
+  for(const pl of fd.platforms){
+    if(pl==="ad-copy"){res["ad-copy"]=genAds(d,fd.cGoal,tk);continue}
+    const hk=pick(HOOKS[tk]||HOOKS.general),body=fill(BODS[tk]||BODS.general,d);
+    if(pl==="instagram"){const cta=pick(CTAS.instagram),tags=mkTags("instagram",tk,fd.cHash);res.instagram={text:hk+"\n\n"+body+"\n\n"+cta,hashtags:tags.join(" ")};}
+    if(pl==="story"){res.story={l1:hk.replace(/[\u{1F300}-\u{1FAFF}]/gu,"").trim().substring(0,40),l2:d.date&&d.time?d.date+" · "+d.time:(d.date||d.time||""),l3:pick(CTAS.story)};}
+    if(pl==="facebook"){const cta=pick(CTAS.facebook),tags=mkTags("facebook",tk,fd.cHash);res.facebook={text:hk+"\n\n"+body+"\n\n"+cta,hashtags:tags.join(" ")};}
+    if(pl==="tiktok"){const cta=pick(CTAS.tiktok),tags=mkTags("tiktok",tk,fd.cHash);const sh=body.split(".").slice(0,2).join(".")+".";const ft=hk+" "+sh+" "+cta;res.tiktok={text:ft,hashtags:tags.join(" "),cc:ft.length};}
+    if(pl==="eventbrite"){const tags=mkTags("eventbrite",tk,fd.cHash);res.eventbrite={title:d.en||tk.replace(/-/g," ")+" at HomeDog",short:body.split(".").slice(0,2).join(".")+".",full:body+"\n\n📍 HomeDog — "+T.addr+"\n\n"+T.bp,tags:tags.map(x=>x.replace("#","")).join(", ")};}
+  }
+  return res;
+}
+function genAds(d,goal,tk){
+  const ga={awareness:{a:"Learn More"},signups:{a:"Sign Up"},memberships:{a:"Get Started"},traffic:{a:"Learn More"}};
+  const g=ga[goal]||ga.awareness,hp=HOOKS[tk]||HOOKS.general;
+  const meta=[],tt=[];
+  for(let i=0;i<3;i++){const h=pick(hp);meta.push({pt:(h+" "+(d.en?d.en+" at HomeDog.":"Come see what HomeDog is all about.")+" "+d.date).trim().substring(0,250),hl:(d.en||"HomeDog Denver").substring(0,40),desc:"Dog-friendly social hub in Denver",cta:g.a});
+    tt.push({text:(h+" "+(d.en?d.en+".":"")+" "+d.date).trim().substring(0,100),cta:g.a});}
+  const google={hl:[(d.en||"HomeDog Denver").substring(0,30),"Dog-Friendly Coworking & Cafe","Join the Pack Today"],ds:["Denver's dog-friendly social hub. Coworking, daycare, cafe & events. "+g.a+"!","Bring your pup to work and play. Memberships from $95/mo. "+T.addr.split(",")[0]+"."]};
+  return{meta,google,tt};
+}
+
+// ── STORAGE ──
+const SK={d:"paws_drafts",r:"paws_ratings"};
+function sg(k){try{const v=localStorage.getItem(k);return v?JSON.parse(v):null}catch{return null}}
+function ss(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return e.name==="QuotaExceededError"?"quota":false}}
+function getDrafts(){return sg(SK.d)||[]}
+function saveDraft(dr){const ds=getDrafts();dr.id=dr.id||"d_"+Date.now();dr.savedAt=new Date().toISOString();const i=ds.findIndex(x=>x.id===dr.id);if(i>=0)ds[i]=dr;else ds.unshift(dr);const r=ss(SK.d,ds);return r==="quota"?"quota":dr}
+function delDraft(id){ss(SK.d,getDrafts().filter(x=>x.id!==id))}
+function getRatings(){return sg(SK.r)||[]}
+function saveRating(id,r){const rs=getRatings();r.draftId=id;r.ratedAt=new Date().toISOString();const i=rs.findIndex(x=>x.draftId===id);if(i>=0)rs[i]=r;else rs.push(r);ss(SK.r,rs)}
+function getRating(id){return getRatings().find(x=>x.draftId===id)||null}
+
+// ── STATE ──
+let curTab="create",curOut=null,curFD=null,photos=[],calDate=new Date();
+
+// ── INIT ──
+document.addEventListener("DOMContentLoaded",()=>{
+  // Nav
+  document.querySelectorAll(".bnav-btn").forEach(b=>b.addEventListener("click",()=>showTab(b.dataset.tab)));
+
+  // Form logic
+  const ct=document.getElementById("cType"),ef=document.getElementById("evFields"),isPaid=document.getElementById("isPaid"),adf=document.getElementById("adF");
+  ct.addEventListener("change",()=>{ef.classList.toggle("hide",ct.value!=="event")});
+  isPaid.addEventListener("change",()=>{adf.classList.toggle("hide",!isPaid.checked)});
+
+  // Photo
+  const pa=document.getElementById("phArea"),pi=document.getElementById("phIn");
+  pa.addEventListener("click",()=>pi.click());
+  pi.addEventListener("change",e=>{if(e.target.files.length)addPhotos(e.target.files)});
+  pa.addEventListener("dragover",e=>{e.preventDefault();pa.classList.add("dragover")});
+  pa.addEventListener("dragleave",()=>pa.classList.remove("dragover"));
+  pa.addEventListener("drop",e=>{e.preventDefault();pa.classList.remove("dragover");if(e.dataTransfer.files.length)addPhotos(e.dataTransfer.files)});
+
+  // Generate
+  document.getElementById("genBtn").addEventListener("click",doGen);
+
+  // Voice
+  initVoice();
+});
+
+function showTab(t){
+  curTab=t;
+  document.querySelectorAll(".tab").forEach(el=>el.classList.remove("on"));
+  document.querySelectorAll(".bnav-btn").forEach(el=>el.classList.remove("on"));
+  document.getElementById("t-"+t)?.classList.add("on");
+  document.querySelectorAll(`[data-tab="${t}"]`).forEach(el=>el.classList.add("on"));
+  if(t==="calendar")renderCal();if(t==="drafts")renderDrafts();if(t==="perf")renderPerf();
+}
+
+// ── PHOTOS ──
+function addPhotos(files){
+  const c=document.getElementById("phThumbs");
+  for(const f of Array.from(files)){
+    if(photos.length>=10)break;
+    const reader=new FileReader();
+    reader.onload=e=>{
+      const ph={url:e.target.result,name:f.name};photos.push(ph);
+      const d=document.createElement("div");d.className="thumb";
+      d.innerHTML=`<img src="${ph.url}" alt=""><button class="thumb-x">&times;</button>`;
+      d.querySelector(".thumb-x").addEventListener("click",()=>{photos=photos.filter(x=>x.url!==ph.url);d.remove()});
+      c.appendChild(d);
+    };reader.readAsDataURL(f);
+  }
+}
+
+// ── VOICE ──
+function initVoice(){
+  const ta=document.getElementById("rawNotes"),btn=document.getElementById("micBtn");
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){btn.style.opacity="0.4";btn.title="Not supported";btn.addEventListener("click",()=>toast("Voice not supported in this browser."));return}
+  const rec=new SR();rec.continuous=true;rec.interimResults=true;rec.lang="en-US";let on=false,final="";
+  btn.addEventListener("click",()=>{if(on)rec.stop();else{final=ta.value;try{rec.start()}catch{toast("Couldn't start mic.")}}});
+  rec.onstart=()=>{on=true;btn.classList.add("rec")};
+  rec.onresult=e=>{let tmp="";for(let i=e.resultIndex;i<e.results.length;i++){if(e.results[i].isFinal)final+=(final?" ":"")+e.results[i][0].transcript;else tmp+=e.results[i][0].transcript}ta.value=final+(tmp?" "+tmp:"")};
+  rec.onend=()=>{on=false;btn.classList.remove("rec")};
+  rec.onerror=e=>{on=false;btn.classList.remove("rec");if(e.error==="not-allowed")toast("Mic access denied.")};
+}
+
+// ── GENERATE ──
+function doGen(){
+  const platforms=[];document.querySelectorAll(".pck:checked").forEach(x=>platforms.push(x.value));
+  if(!platforms.length){toast("Paws needs at least one platform!");return}
+  const fd={
+    cType:document.getElementById("cType").value,evType:document.getElementById("evType").value,platforms,
+    rawNotes:document.getElementById("rawNotes").value,evName:document.getElementById("evName").value,
+    date:document.getElementById("evDate").value,time:document.getElementById("evTime").value,
+    price:document.getElementById("evPrice").value,partner:document.getElementById("evPartner").value,
+    audience:document.getElementById("evAud").value,cHash:document.getElementById("cHash").value,
+    isPaid:document.getElementById("isPaid").checked,cGoal:document.getElementById("cGoal").value,
+    postDate:document.getElementById("postDate").value
+  };
+  curFD=fd;curOut=generate(fd);renderOut(curOut);
+  document.getElementById("outSec").classList.remove("hide");
+  document.getElementById("outSec").scrollIntoView({behavior:"smooth"});
+}
+
+// ── RENDER OUTPUT ──
+function renderOut(out){
+  const c=document.getElementById("outCards");c.innerHTML="";
+  const labels={instagram:"Instagram Caption",story:"Instagram Story",facebook:"Facebook Post",tiktok:"TikTok Description",eventbrite:"Eventbrite Listing","ad-copy":"Ad Copy"};
+  for(const[pl,cn] of Object.entries(out)){
+    if(pl==="ad-copy"){renderAds(cn,c);continue}
+    const card=document.createElement("div");card.className="ocard";
+    let body="",tags="",meta="";
+    if(pl==="story"){
+      body=`<div class="story-prev">${photos.length?`<img src="${photos[0].url}" alt="">`:
+        '<div class="story-ph"></div>'}<div class="story-ov"><div class="l1">${cn.l1}</div><div class="l2">${cn.l2}</div><div class="l3">${cn.l3}</div></div></div>`;
+    }else if(pl==="eventbrite"){
+      body=`<div class="ofield"><b>Title:</b> ${cn.title}</div><div class="ofield"><b>Short:</b> ${cn.short}</div><div class="otxt">${cn.full.replace(/\n/g,"<br>")}</div>`;
+      meta=`<div class="ometa">Tags: ${cn.tags}</div>`;
+    }else{
+      body=`<div class="otxt">${cn.text.replace(/\n/g,"<br>")}</div>`;
+      if(cn.hashtags)tags=`<div class="otags">${cn.hashtags}</div>`;
+      if(cn.cc){const w=pl==="tiktok"&&cn.cc>150;meta=`<div class="ometa ${w?"warn":""}">${cn.cc} chars${w?" (over 150)":""}</div>`}
+    }
+    card.innerHTML=`<div class="ocard-hdr"><h3>${labels[pl]||pl}</h3><button class="rg" title="Regenerate">↻</button></div>${body}${tags}${meta}
+      <div class="oacts">
+        ${pl==="story"&&photos.length?`<button class="btn btn-s ssave" data-p="${pl}">Save with Text</button>`:""}
+        <button class="btn btn-s cpb" data-p="${pl}" data-t="text">Copy Text</button>
+        ${cn.hashtags?`<button class="btn btn-s cpb" data-p="${pl}" data-t="tags">Copy Tags</button>`:""}
+        ${navigator.share?`<button class="btn btn-s shr" data-p="${pl}">Share</button>`:""}
+      </div>`;
+    c.appendChild(card);
+  }
+  c.querySelectorAll(".cpb").forEach(b=>b.addEventListener("click",()=>doCopy(b.dataset.p,b.dataset.t,b)));
+  c.querySelectorAll(".shr").forEach(b=>b.addEventListener("click",()=>doShare(b.dataset.p)));
+  c.querySelectorAll(".rg").forEach(b=>b.addEventListener("click",()=>{curOut=generate(curFD);renderOut(curOut)}));
+  c.querySelectorAll(".ssave").forEach(b=>b.addEventListener("click",saveStory));
+
+  const acts=document.getElementById("outActs");
+  acts.innerHTML=`<button class="btn btn-p" id="saveDr">Save Draft</button><button class="btn" id="expDr">Export .txt</button>`;
+  document.getElementById("saveDr").addEventListener("click",()=>{
+    const r=saveDraft({formData:curFD,outputs:curOut,postDate:curFD.postDate||""});
+    toast(r==="quota"?"Storage full — delete old drafts.":"Paws saved your draft! 🐾");
+  });
+  document.getElementById("expDr").addEventListener("click",()=>{
+    let txt="Paws Export — "+new Date().toLocaleDateString()+"\n"+"=".repeat(40)+"\n\n";
+    for(const[p,cn] of Object.entries(curOut)){txt+=`[${p.toUpperCase()}]\n`;if(cn.text)txt+=cn.text+"\n";if(cn.hashtags)txt+=cn.hashtags+"\n";if(cn.full)txt+=cn.title+"\n"+cn.full+"\n";txt+="\n"}
+    const blob=new Blob([txt],{type:"text/plain"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="paws-export-"+new Date().toISOString().slice(0,10)+".txt";a.click();
+  });
+}
+
+function renderAds(ad,c){
+  // Meta
+  let h=`<div class="ocard"><div class="ocard-hdr"><h3>Meta Ads</h3></div>`;
+  ad.meta.forEach((v,i)=>{h+=`<div class="adv"><div class="adv-lbl">Variant ${i+1}</div><div class="ofield"><b>Primary:</b> ${v.pt}</div><div class="ofield"><b>Headline:</b> ${v.hl}</div><div class="ofield"><b>Desc:</b> ${v.desc}</div><div class="ofield"><b>CTA:</b> ${v.cta}</div><button class="btn btn-s cpd" data-c="${esc(v.pt+'\n'+v.hl+'\n'+v.desc)}">Copy</button></div>`});
+  h+="</div>";c.insertAdjacentHTML("beforeend",h);
+  // Google
+  h=`<div class="ocard"><div class="ocard-hdr"><h3>Google Ads</h3></div>`;
+  ad.google.hl.forEach((x,i)=>{h+=`<div class="ofield"><b>H${i+1}:</b> ${x} <span class="chrc">(${x.length}/30)</span></div>`});
+  ad.google.ds.forEach((x,i)=>{h+=`<div class="ofield"><b>D${i+1}:</b> ${x} <span class="chrc">(${x.length}/90)</span></div>`});
+  h+=`<button class="btn btn-s cpd" data-c="${esc(ad.google.hl.join('\n')+'\n'+ad.google.ds.join('\n'))}">Copy All</button></div>`;c.insertAdjacentHTML("beforeend",h);
+  // TikTok
+  h=`<div class="ocard"><div class="ocard-hdr"><h3>TikTok Ads</h3></div>`;
+  ad.tt.forEach((v,i)=>{h+=`<div class="adv"><div class="adv-lbl">Variant ${i+1}</div><div class="ofield">${v.text} <span class="chrc">(${v.text.length}/100)</span></div><button class="btn btn-s cpd" data-c="${esc(v.text)}">Copy</button></div>`});
+  h+="</div>";c.insertAdjacentHTML("beforeend",h);
+  c.querySelectorAll(".cpd").forEach(b=>b.addEventListener("click",()=>clip(b.dataset.c,b)));
+}
+
+// ── COPY / SHARE ──
+async function doCopy(p,t,btn){
+  const cn=curOut[p];if(!cn)return;
+  let txt="";
+  if(p==="story")txt=cn.l1+"\n"+cn.l2+"\n"+cn.l3;
+  else if(p==="eventbrite")txt=t==="text"?cn.title+"\n\n"+cn.full:cn.tags;
+  else txt=t==="tags"?cn.hashtags:(cn.text+(cn.hashtags?"\n\n"+cn.hashtags:""));
+  await clip(txt,btn);
+}
+async function clip(txt,btn){
+  try{await navigator.clipboard.writeText(txt)}catch{const ta=document.createElement("textarea");ta.value=txt;ta.style.cssText="position:fixed;opacity:0";document.body.appendChild(ta);ta.select();document.execCommand("copy");document.body.removeChild(ta)}
+  if(btn){const o=btn.textContent;btn.textContent="Copied!";btn.classList.add("copied");setTimeout(()=>{btn.textContent=o;btn.classList.remove("copied")},1500)}
+}
+async function doShare(p){
+  const cn=curOut[p];if(!cn||!navigator.share)return;
+  let txt=p==="story"?cn.l1+"\n"+cn.l2+"\n"+cn.l3:(cn.text||"")+(cn.hashtags?"\n\n"+cn.hashtags:"");
+  try{await navigator.share({text:txt})}catch{}
+}
+function saveStory(){
+  if(!photos.length||!curOut?.story)return;
+  const cn=curOut.story,cv=document.createElement("canvas"),ctx=cv.getContext("2d"),img=new Image();
+  img.onload=()=>{cv.width=1080;cv.height=1920;ctx.drawImage(img,0,0,1080,1920);
+    ctx.fillStyle="rgba(0,0,0,0.3)";ctx.fillRect(0,0,1080,1920);
+    ctx.textAlign="center";ctx.fillStyle="#fff";ctx.shadowColor="rgba(0,0,0,0.6)";ctx.shadowBlur=8;
+    ctx.font="bold 64px sans-serif";ctx.fillText(cn.l1,540,750);
+    ctx.font="48px sans-serif";ctx.fillText(cn.l2,540,850);
+    ctx.font="bold 44px sans-serif";ctx.fillText(cn.l3,540,960);
+    cv.toBlob(b=>{const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="paws-story-"+Date.now()+".png";a.click();toast("Paws saved your story! 🐾")},"image/png");
+  };img.src=photos[0].url;
+}
+
+// ── CALENDAR ──
+function renderCal(){
+  const c=document.getElementById("calView");if(!c)return;
+  const y=calDate.getFullYear(),m=calDate.getMonth(),fd=new Date(y,m,1).getDay(),dim=new Date(y,m+1,0).getDate();
+  const mn=calDate.toLocaleDateString("en-US",{month:"long",year:"numeric"});
+  const today=new Date(),sched=getDrafts().filter(d=>d.postDate);
+  let h=`<div class="cal-hdr"><button id="cP">‹</button><h2>${mn}</h2><button id="cN">›</button></div>
+    <div class="cal-today"><button class="btn btn-s" id="cT">Today</button></div>
+    <div class="cal-g"><div class="cal-dl">S</div><div class="cal-dl">M</div><div class="cal-dl">T</div><div class="cal-dl">W</div><div class="cal-dl">T</div><div class="cal-dl">F</div><div class="cal-dl">S</div>`;
+  for(let i=0;i<fd;i++)h+=`<div class="cal-c"></div>`;
+  for(let d=1;d<=dim;d++){
+    const ds=`${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+    const dd=sched.filter(x=>x.postDate===ds);
+    const it=today.getFullYear()===y&&today.getMonth()===m&&today.getDate()===d;
+    h+=`<div class="cal-c ${it?"today":""} ${dd.length?"has":""}" data-d="${ds}"><span>${d}</span>${dd.length?`<span class="cal-dot">${dd.length}</span>`:""}</div>`;
+  }
+  h+="</div>";
+  const unsched=getDrafts().filter(d=>!d.postDate);
+  if(unsched.length)h+=`<div class="cal-un"><h3>Unscheduled (${unsched.length})</h3>${unsched.map(d=>`<div class="dmini"><b>${d.formData?.cType||"Post"}</b>${(d.outputs?.instagram?.text||"").substring(0,50)}...</div>`).join("")}</div>`;
+  c.innerHTML=h;
+  document.getElementById("cP").addEventListener("click",()=>{calDate.setMonth(calDate.getMonth()-1);renderCal()});
+  document.getElementById("cN").addEventListener("click",()=>{calDate.setMonth(calDate.getMonth()+1);renderCal()});
+  document.getElementById("cT").addEventListener("click",()=>{calDate=new Date();renderCal()});
+  c.querySelectorAll(".cal-c.has").forEach(cell=>{
+    cell.addEventListener("click",()=>{
+      const dd=getDrafts().filter(x=>x.postDate===cell.dataset.d);
+      const det=document.getElementById("calDet");
+      det.innerHTML=`<h3>${new Date(cell.dataset.d+"T00:00:00").toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"})}</h3>${dd.map(d=>`<div class="dcard"><div class="dbadge">${d.formData?.cType||"Post"}</div><p class="dprev">${(d.outputs?.instagram?.text||"").substring(0,100)}...</p></div>`).join("")}`;
+      det.classList.remove("hide");
+    });
+  });
+}
+
+// ── DRAFTS ──
+function renderDrafts(){
+  const c=document.getElementById("dList");if(!c)return;
+  const ds=getDrafts();
+  if(!ds.length){c.innerHTML=`<div class="empty"><h3>🐾 No drafts yet</h3><p>Let Paws chew on something, then hit Save Draft!</p></div>`;return}
+  let h=`<div style="margin-bottom:10px"><button class="btn btn-s" id="expAll">Export All (.txt)</button></div>`;
+  for(const d of ds){
+    const prev=d.outputs?.instagram?.text||d.outputs?.facebook?.text||"Untitled";
+    const rt=getRating(d.id);
+    // Build expanded content for each platform
+    let expanded="";
+    if(d.outputs){
+      for(const[p,cn] of Object.entries(d.outputs)){
+        if(p==="ad-copy")continue;
+        const plabels={instagram:"Instagram",story:"IG Story",facebook:"Facebook",tiktok:"TikTok",eventbrite:"Eventbrite"};
+        let txt=cn.text||cn.full||(cn.l1?cn.l1+"\n"+cn.l2+"\n"+cn.l3:"")||"";
+        let tags=cn.hashtags||"";
+        expanded+=`<div class="dexp-plat">
+          <div class="dexp-plat-name">${plabels[p]||p}</div>
+          <div class="dexp-text">${(txt).replace(/\n/g,"<br>")}</div>
+          ${tags?`<div class="dexp-tags">${tags}</div>`:""}
+          <div class="dexp-acts">
+            <button class="btn btn-s cpd" data-c="${esc(txt+(tags?"\n\n"+tags:""))}">Copy</button>
+            ${cn.title?`<button class="btn btn-s cpd" data-c="${esc(cn.title+"\n\n"+(cn.full||""))}">Copy Full</button>`:""}
+          </div>
+        </div>`;
+      }
+    }
+    h+=`<div class="dcard dcard-click" data-id="${d.id}">
+      <div class="dcard-hdr"><span class="dbadge">${d.formData?.cType||"Post"}</span><span class="ddate">${d.postDate||"Unscheduled"}</span><button class="dx" data-id="${d.id}">&times;</button></div>
+      <p class="dprev">${prev.substring(0,120)}...</p>
+      <div class="dplat">${(d.formData?.platforms||[]).join(" · ")}</div>
+      ${rt?`<div class="drating">${"★".repeat(rt.stars)}${"☆".repeat(5-rt.stars)}</div>`:""}
+      <div class="dsaved">Saved ${new Date(d.savedAt).toLocaleDateString()}</div>
+      <div class="dexp hide" id="dexp-${d.id}">
+        ${expanded}
+        <div style="margin-top:10px;display:flex;gap:6px">
+          <button class="btn btn-s dexp-export" data-id="${d.id}">Export .txt</button>
+        </div>
+      </div>
+      <div class="dcard-toggle">Tap to view</div>
+    </div>`;
+  }
+  c.innerHTML=h;
+
+  // Click to expand/collapse
+  c.querySelectorAll(".dcard-click").forEach(card=>{
+    card.addEventListener("click",e=>{
+      if(e.target.closest(".dx")||e.target.closest(".cpd")||e.target.closest(".dexp-export"))return;
+      const exp=card.querySelector(".dexp");
+      const tog=card.querySelector(".dcard-toggle");
+      exp.classList.toggle("hide");
+      tog.textContent=exp.classList.contains("hide")?"Tap to view":"Tap to collapse";
+    });
+  });
+
+  // Copy buttons inside expanded drafts
+  c.querySelectorAll(".cpd").forEach(b=>b.addEventListener("click",e=>{e.stopPropagation();clip(b.dataset.c,b)}));
+
+  // Per-draft export
+  c.querySelectorAll(".dexp-export").forEach(b=>b.addEventListener("click",e=>{
+    e.stopPropagation();
+    const d=ds.find(x=>x.id===b.dataset.id);if(!d)return;
+    let txt="Paws Draft Export\n"+"=".repeat(30)+"\n\n";
+    if(d.outputs)for(const[p,cn] of Object.entries(d.outputs)){txt+=`[${p.toUpperCase()}]\n`;if(cn.text)txt+=cn.text+"\n";if(cn.hashtags)txt+=cn.hashtags+"\n";if(cn.full)txt+=cn.title+"\n"+cn.full+"\n";txt+="\n"}
+    const blob=new Blob([txt],{type:"text/plain"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="paws-draft-"+b.dataset.id+".txt";a.click();
+  }));
+
+  // Delete buttons
+  c.querySelectorAll(".dx").forEach(b=>b.addEventListener("click",e=>{e.stopPropagation();if(confirm("Delete draft?")){delDraft(b.dataset.id);renderDrafts()}}));
+  document.getElementById("expAll")?.addEventListener("click",()=>{
+    let txt="Paws Export — All Drafts\n"+"=".repeat(40)+"\n\n";
+    for(const d of ds){txt+="--- "+d.formData?.cType+" | "+(d.postDate||"Unsched")+" ---\n";if(d.outputs)for(const[p,cn] of Object.entries(d.outputs)){txt+=`[${p}]\n`;if(cn.text)txt+=cn.text+"\n";if(cn.hashtags)txt+=cn.hashtags+"\n";txt+="\n"}txt+="\n"}
+    const blob=new Blob([txt],{type:"text/plain"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="paws-all-drafts.txt";a.click();
+  });
+}
+
+// ── PERFORMANCE ──
+function renderPerf(){
+  const c=document.getElementById("perfView");if(!c)return;
+  const rs=getRatings(),ds=getDrafts();
+  const unrated=ds.filter(d=>!getRating(d.id)).slice(0,10);
+  if(!rs.length){
+    c.innerHTML=`<div class="empty"><h3>🐾 Paws is ready to learn</h3><p>Post something, then come back and give it a belly rub (or not). Paws gets better with every rating.</p></div>${mkRatingForms(unrated)}`;
+    attachStars(c);return;
+  }
+  const avg=rs.reduce((s,r)=>s+r.stars,0)/rs.length;
+  const byP={},byCT={};
+  for(const r of rs){const d=ds.find(x=>x.id===r.draftId);if(!d)continue;
+    const ct=d.formData?.cType||"?";byP[ct]=byP[ct]||[];byP[ct].push(r.stars);
+    for(const p of(d.formData?.platforms||[])){byCT[p]=byCT[p]||[];byCT[p].push(r.stars)}}
+  const av=a=>a.length?(a.reduce((s,x)=>s+x,0)/a.length).toFixed(1):"—";
+  let h=`<div class="pov"><div class="pstat"><span class="num">${rs.length}</span><span class="lbl">Rated</span></div>
+    <div class="pstat"><span class="num">${avg.toFixed(1)}</span><span class="lbl">Avg Rating</span></div></div>`;
+  h+=`<div class="psec"><h3>By Platform</h3><div>${Object.entries(byCT).map(([k,v])=>`<div class="pbar-row"><span class="pbar-lbl">${k}</span><div class="pbar-trk"><div class="pbar-fill" style="width:${av(v)/5*100}%"></div></div><span class="pbar-val">${av(v)}</span></div>`).join("")}</div></div>`;
+  h+=`<div class="psec"><h3>By Content Type</h3><div>${Object.entries(byP).map(([k,v])=>`<div class="pbar-row"><span class="pbar-lbl">${k}</span><div class="pbar-trk"><div class="pbar-fill" style="width:${av(v)/5*100}%"></div></div><span class="pbar-val">${av(v)}</span></div>`).join("")}</div></div>`;
+  h+=mkRatingForms(unrated);
+  c.innerHTML=h;attachStars(c);
+}
+function mkRatingForms(unrated){
+  if(!unrated.length)return"";
+  let h=`<div class="psec"><h3>Rate Your Posts</h3>`;
+  for(const d of unrated){
+    const prev=d.outputs?.instagram?.text||d.outputs?.facebook?.text||"Untitled";
+    h+=`<div class="rcard" data-id="${d.id}"><p class="dprev">${prev.substring(0,80)}...</p>
+      <div class="stars">${[1,2,3,4,5].map(i=>`<button class="star" data-s="${i}">☆</button>`).join("")}</div>
+      <input type="text" class="rnotes fg" placeholder="Quick notes (optional)" maxlength="100" style="margin-bottom:6px">
+      <button class="btn btn-s svrt">Save Rating</button></div>`}
+  return h+"</div>";
+}
+function attachStars(c){
+  c.querySelectorAll(".rcard").forEach(card=>{
+    let sel=0;
+    card.querySelectorAll(".star").forEach(b=>{b.addEventListener("click",()=>{
+      sel=parseInt(b.dataset.s);card.querySelectorAll(".star").forEach((x,i)=>{x.textContent=i<sel?"★":"☆";x.classList.toggle("on",i<sel)})})});
+    card.querySelector(".svrt")?.addEventListener("click",()=>{
+      if(!sel){toast("Give Paws some stars first!");return}
+      saveRating(card.dataset.id,{stars:sel,notes:card.querySelector(".rnotes")?.value||""});
+      toast("Rating saved! Paws is learning 🐾");renderPerf();
+    });
+  });
+}
+
+// ── TOAST ──
+function toast(msg){let t=document.getElementById("toast");t.textContent=msg;t.classList.add("vis");setTimeout(()=>t.classList.remove("vis"),2500)}
+function esc(s){return s.replace(/"/g,"&quot;").replace(/'/g,"&#39;").replace(/</g,"&lt;")}
+</script>
+</body>
+</html>
