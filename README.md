@@ -1,2 +1,3 @@
-# PawsMarketing
-Marketing content generation tool for HomeDog
+# homedog-content-generator
+HomeDog social media content generator
+
